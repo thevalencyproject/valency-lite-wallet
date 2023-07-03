@@ -5,6 +5,7 @@
 #include <string>
 #include "valency-network/TransactionInfo.h"
 #include "valency-core/ui/console-ui/ConsoleUI.h"
+#include "valency-core/networking/onion-routing/Onion.h"
 #include "valency-core/file-recognition/file-writer/FileWriter.h"
 #include "valency-core/file-recognition/file-reader/FileReader.h"
 #include "valency-core/cryptography/ntru-encryption/NTRUencrypt.h"
