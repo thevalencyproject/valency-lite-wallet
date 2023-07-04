@@ -5,22 +5,13 @@
 #include <string>
 #include "valency-network/TransactionInfo.h"
 #include "valency-core/ui/console-ui/ConsoleUI.h"
-#include "valency-core/networking/onion-routing/Onion.h"
 #include "valency-core/file-recognition/file-writer/FileWriter.h"
 #include "valency-core/file-recognition/file-reader/FileReader.h"
-#include "valency-core/cryptography/ntru-encryption/NTRUencrypt.h"
-#include "valency-core/cryptography/aes-encryption/AES-Encryption.h"
-#include "valency-core/cryptography/traceable-ring-signatures/Ring-Signature.h"
 
 
 class Interface {
 private:
     ConsoleUI ui(0);
-    FileReader reader;
-    FileWriter writer;
-    NTRUencrypt ntru(3);
-    AESEncryption encrypt(256);
-    TraceableRingSignature ringsig;
 
     std::string privateKey;     // Read from a file on login
     std::string publicKey;      // Read from a file on login
