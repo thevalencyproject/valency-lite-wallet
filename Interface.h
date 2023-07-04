@@ -3,8 +3,9 @@
 
 #include <vector>
 #include <string>
-#include "valency-network/TransactionInfo.h"
 #include "valency-core/ui/console-ui/ConsoleUI.h"
+#include "valency-network/structures/TransactionInfo.h"
+#include "valency-network/wallet-functions/WalletFunctions.h"
 #include "valency-core/file-recognition/file-writer/FileWriter.h"
 #include "valency-core/file-recognition/file-reader/FileReader.h"
 
@@ -12,6 +13,9 @@
 class Interface {
 private:
     ConsoleUI ui(0);
+    FileReader reader;
+    FileWriter writer;
+    WalletFunctions wallet;
 
     std::string privateKey;     // Read from a file on login
     std::string publicKey;      // Read from a file on login
