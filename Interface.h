@@ -8,6 +8,7 @@
 #include "valency-network/wallet-functions/WalletFunctions.h"
 #include "valency-core/file-recognition/file-writer/FileWriter.h"
 #include "valency-core/file-recognition/file-reader/FileReader.h"
+#include "valency-core/cryptography/aes-encryption/AES-Encryption.h"
 
 
 class Interface {
@@ -15,13 +16,14 @@ private:
     ConsoleUI ui(0);
     FileReader reader;
     FileWriter writer;
+    AESEncryption aes(256);
     WalletFunctions wallet;
 
-    std::string privateKey;     // Read from a file on login
-    std::string publicKey;      // Read from a file on login
+    std::string privateKey;     // Read from a file on login (decrypted using AES)
+    std::string publicKey;      // Read from a file on login (decrypted using AES)
 
     std::vector<TransactionInfo> transactionRepo;    // Holds all the previous transactions
-    void readTransactionRepository();                // Reads the transaction repository file from this wallet
+    void readTransactionRepository();                // Reads the transaction repository file from this wallet - encrypted in file using AES with private key
 
     // CUSTOM CONSOLE-UI TEXT
     std::vector<std::string> headerText{"{THE VALENCY NETWORK}", "Lite-Wallet"};    // Header

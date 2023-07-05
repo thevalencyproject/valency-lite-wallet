@@ -2,63 +2,43 @@
 
 
 std::vector<std::string> Interface::loginSuccessText(std::string publicAddress) {
-    std::vector<std::string> output;
-
-    output.push_back("LOGIN SUCCESS:");
-    output.push_back(publicAddress);
-
+    std::vector<std::string> output{"LOGIN SUCCESS:", publicAddress};
     return output;
 }
 
 std::vector<std::string> Interface::walletBalanceText(double amount) {
-    std::vector<std::string> output;
-
-    output.push_back("WALLET BALANCE:");
-    output.push_back(std::to_string(amount) + "vlnc");
-
+    std::vector<std::string> output{"WALLET BALANCE:", std::to_string(amount) + "vlnc"};
     return output;
 }
 
 std::vector<std::string> Interface::transactionFeeInfoText(std::string currentTime, double fee) {
-    std::vector<std::string> output;
-
-    output.push_back("Fee Frozen for 30s from: " + currentTime);
-    output.push_back("Transaction Fee: " + std::to_string(fee));
-    output.push_back("Accept Transaction?");
-
+    std::vector<std::string> output{
+        "Fee Frozen for 30s from: " + currentTime, 
+        "Transaction Fee: " + std::to_string(fee), 
+        "Accept Transaction?"};
     return output;
 }
 
 std::vector<std::string> Interface::transactionSuccessText(TransactionInfo info) {
-    std::vector<std::string> output;
-
-    output.push_back(info.time + " on the " + info.date);                       // Time and Date
-    output.push_back("Amount: " + std::to_string(info.amount) + "vlnc");        // Transaction Amount
-    output.push_back("Fee: " + std::to_string(info.fee) + "vlnc");              // Transaction Fee
-    output.push_back("Receiver" + info.receiver);                               // Receiver Address
-    output.push_back("Number of onion nodes: " + std::to_string(info.nodes));   // # of Onion Routing Nodes
-
+    std::vector<std::string> output{
+        info.time + " on the " + info.date,                        // Time and Date
+        "Amount: " + std::to_string(info.amount) + "vlnc",         // Transaction Amount
+        "Fee: " + std::to_string(info.fee) + "vlnc",               // Transaction Fee
+        "Receiver:", info.receiver,                                // Receiver Address
+        "Number of onion nodes: " + std::to_string(info.nodes)};   // # of Onion Routing Nodes
     return output;
 }
 
 std::vector<std::string> Interface::transactionFailureText(std::string error) {
-    std::vector<std::string> output;
-
-    output.push_back("TRANSACTION FAILED");
-    output.push_back(error);
-
+    std::vector<std::string> output{"TRANSACTION FAILED", error};
     return output;
 }
 
 std::vector<std::string> Interface::createStealthAddressText(std::string publicKey, std::string privateKey) {
-    std::vector<std::string> output;
-
-    output.push_back("NEW STEALTH ADDRESS");
-    output.push_back("Public Key:");
-    output.push_back(publicKey);
-    output.push_back("Private Key:");
-    output.push_back(privateKey);
-
+    std::vector<std::string> output{
+        "NEW STEALTH ADDRESS",
+        "Public Key:", publicKey,
+        "Private Key:", privateKey};
     return output;
 }
 
