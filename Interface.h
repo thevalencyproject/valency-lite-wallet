@@ -22,12 +22,13 @@ private:
     std::string privateKey;
     std::string publicKey;
 
-    std::string stealthKeyIndexFilePath = "stealthkeyindex.vlnc";   // The file path to the stealth key index file
-    unsigned int stealthKeyIndex(std::string privateKey);           // Reads the stealth key index for this wallet privateKey and increments it
-
-    std::string transactionRepoFilePath = "transactionRepo.vlnc";    // The file path to the transaction repository
-    std::vector<TransactionInfo> transactionRepo;                    // Holds all the previous transactions
-    void readTransactionRepository();                                // Reads the transaction repository file from this wallet - encrypted in file using AES with private key
+    std::string vlncFileType = ".vlnc";
+    std::string stealthKeyIndexFilePath = "stealthkeyindex-";    // The file path to the stealth key index file (minus publickey for individual identification)
+    std::string transactionRepoFilePath = "transactionRepo-";    // The file path to the transaction repository (minus publickey for individual identification)
+    std::vector<TransactionInfo> transactionRepo;                // Holds all the previous transactions
+    
+    unsigned int stealthKeyIndex(std::string privateKey);    // Reads the stealth key index for this wallet privateKey and increments it 
+    void readTransactionRepository();                        // Reads the transaction repository file from this wallet - encrypted in file using AES with private key
 
     // CUSTOM CONSOLE-UI TEXT
     std::vector<std::string> headerText{"{THE VALENCY NETWORK}", "Lite-Wallet"};    // Header

@@ -1,6 +1,31 @@
 #include "Interface.h"
 
 
+// READER FUNCTIONS - DECRYPTS DATA FROM FILE
+void Interface::readTransactionRepository() {
+    transactionRepo = reader.getData(transactionRepoFilePath);
+
+    // Decrypt the data using the private key
+    for(int i = 0; i < transactionRepo.size(); i++) {
+        transactionRepo[i].time = aes.decrypt(privateKey, transactionRepo[i].time);
+        transactionRepo[i].date = aes.decrypt(privateKey, transactionRepo[i].date);
+        transactionRepo[i].sender = aes.decrypt(privateKey, transactionRepo[i].sender);
+        transactionRepo[i].receiver = aes.decrypt(privateKey, transactionRepo[i].receiver);
+        transactionRepo[i].amount = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].amount)));
+        transactionRepo[i].fee = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].fee)));
+        transactionRepo[i].nodes = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].nodes)));
+        transactionRepo[i].balance = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].balance)));
+    }
+}
+
+unsigned int Interface::stealthKeyIndex(std::string privateKey) {
+    unsigned int output = stoul(aes.decrypt(reader.getData(stealthKeyIndexFilePath)));  // Get the current index
+    writer.createFile(std::to_string(output + 1), stealthKeyIndexFilePath);               // Add 1 to the index for next stealth key generation
+
+    return output;
+}
+
+// TEXT FUNCTIONS
 std::vector<std::string> Interface::loginSuccessText(std::string publicAddress) {
     std::vector<std::string> output{"LOGIN SUCCESS:", publicAddress};
     return output;
@@ -57,6 +82,9 @@ std::vector<std::string> Interface::displayTransactionHistoryText() {
     return output;
 }
 
+
+
+// WALLETFUNCTION FRAMEWORK INTERFACING FUNCTIONS
 void Interface::login() {
     while(1) {
         switch(ui.input(loginMenuText)) {
@@ -143,11 +171,8 @@ void Interface::createTransaction() {
     int numOfOnionNodes = 0;
     ui.message(onionRoutingSelectionText);
     switch(ui.yesOrNo(false)) { 
-    case 1: 
-        useOnionRouting = true;
-        numOfOnionNodes = stoi(ui.input(numOfOnionNodesText));
-        while(numOfOnionNodes < 4 && numOfOnionNodes > 6)
-            numOfOnionNodes = stoi(ui.input(numOfOnionNodesText));
+    
+    i(ui.input(numOfOnionNodesText));
     break;
     }
 
@@ -183,6 +208,20 @@ void Interface::getTransactionHistory() {
 }
 
 void Interface::saveTransactionHistory() {
+    // Encrypt the data using the private key
+    std::vector<TransactionInfo> output;
+    output.resize(transactionRepo.size());
+    for(int i = 0; i < transactionRepo.size(); i++) {
+        output[i].time = aes.encrypt(privateKey, transactionRepo[i].time);
+        output[i].date = aes.encrypt(privateKey, transactionRepo[i].date);
+        output[i].sender = aes.encrypt(privateKey, transactionRepo[i].sender);
+        output[i].receiver = aes.encrypt(privateKey, transactionRepo[i].receiver);
+        output[i].amount = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].amount)));
+        output[i].fee = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].fee)));
+        output[i].nodes = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].nodes)));
+        output[i].balance = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].balance)));
+    }
+
     writer.createFile(transactionRepo, transactionRepoFilePath);
     ui.message(savedHistoryText);
 }
@@ -192,6 +231,12 @@ void Interface::run() {
     ui.header(headerText);
 
     login();
+
+    // Decrypt and read repo and stealth address index files
+    stealthKeyIndexFilePath = "stealthkeyindex-" + publicKey + vlncFileType;
+    transactionRepoFilePath = "transactionRepo-" + publicKey + vlncFileType;
+    reader.getData(transactionRepoFilePath);
+
     mainMenu();
 
     saveTransactionHistory();
