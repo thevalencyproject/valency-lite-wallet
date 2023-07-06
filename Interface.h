@@ -19,11 +19,15 @@ private:
     AESEncryption aes(256);
     WalletFunctions wallet;
 
-    std::string privateKey;     // Read from a file on login (decrypted using AES)
-    std::string publicKey;      // Read from a file on login (decrypted using AES)
+    std::string privateKey;
+    std::string publicKey;
 
-    std::vector<TransactionInfo> transactionRepo;    // Holds all the previous transactions
-    void readTransactionRepository();                // Reads the transaction repository file from this wallet - encrypted in file using AES with private key
+    std::string stealthKeyIndexFilePath = "stealthkeyindex.vlnc";   // The file path to the stealth key index file
+    unsigned int stealthKeyIndex(std::string privateKey);           // Reads the stealth key index for this wallet privateKey and increments it
+
+    std::string transactionRepoFilePath = "transactionRepo.vlnc";    // The file path to the transaction repository
+    std::vector<TransactionInfo> transactionRepo;                    // Holds all the previous transactions
+    void readTransactionRepository();                                // Reads the transaction repository file from this wallet - encrypted in file using AES with private key
 
     // CUSTOM CONSOLE-UI TEXT
     std::vector<std::string> headerText{"{THE VALENCY NETWORK}", "Lite-Wallet"};    // Header

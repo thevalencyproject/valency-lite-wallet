@@ -165,20 +165,26 @@ void Interface::createTransaction() {
     }
 
     // If the transaction is valid
+    transactionRepo.push_back(transaction.second);              // Add the successful transaction to the repository
+
     ui.message(transactionSuccessTitleText);
-    ui.message(transactionSuccessText(transaction.second));
+    ui.message(transactionSuccessText(transaction.second));     // Display the transaction details
 }
 
 void Interface::createStealthAddress() {
-
+    std::pair<std::string, std::string> output = wallet.generateStealthPair(publicKey, privateKey, stealthKeyIndex());
+    ui.message(createStealthAddressText(std::string output.first, std::string output.second));
 }
 
 void Interface::getTransactionHistory() {
-
+    ui.message(displayTransactionHistoryTitleText);
+    ui.message(displayTransactionHistoryText());
+    ui.message(displayTransactionHistoryFooterText);
 }
 
 void Interface::saveTransactionHistory() {
-
+    writer.createFile(transactionRepo, transactionRepoFilePath);
+    ui.message(savedHistoryText);
 }
 
 
@@ -187,4 +193,7 @@ void Interface::run() {
 
     login();
     mainMenu();
+
+    saveTransactionHistory();
+    ui.message(loggedOutText);
 }
