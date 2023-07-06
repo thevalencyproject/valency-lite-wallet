@@ -11,9 +11,9 @@ std::vector<std::string> Interface::walletBalanceText(double amount) {
     return output;
 }
 
-std::vector<std::string> Interface::transactionFeeInfoText(std::string currentTime, double fee) {
+std::vector<std::string> Interface::transactionFeeInfoText(std::string expiryTime, double fee) {
     std::vector<std::string> output{
-        "Fee Frozen for 30s from: " + currentTime, 
+        "Fee Frozen until: " + expiryTime, 
         "Transaction Fee: " + std::to_string(fee), 
         "Accept Transaction?"};
     return output;
@@ -55,4 +55,136 @@ std::vector<std::string> Interface::displayTransactionHistoryText() {
     output.pop_back();  // Remove the last spacing element
 
     return output;
+}
+
+void Interface::login() {
+    while(1) {
+        switch(ui.input(loginMenuText)) {
+        case 1:
+            std::string user = ui.input(usernameLoginText);
+            std::string pass = ui.input(passwordLoginText);
+
+            std::pair<std::string, std::string> output = wallet.generateKeyPair(user, pass);
+            privateKey = output.first;
+            publicKey = output.second;
+
+            break;
+        default:
+            std::string privKey = ui.input(privateKeyLoginText);
+            publicKey = wallet.generatePublicKey(privKey);
+        }
+
+        if(publicKey.empty()) {
+            ui.message(loginFailureText);
+            continue;
+        }
+
+        ui.message(loginSuccessText(publicKey));
+    }
+}
+// "Check Balance", "Create Transaction", "Create Stealth Address", "Transaction History", "Save Transaction History", "Logout"}
+void Interface::mainMenu() {
+    int exit = 0;
+    while(exit == 0) {
+        switch(ui.menu(mainMenuText, false)) {
+        case 1:
+            checkBalance();
+            break;
+        case 2:
+            createTransaction();
+            break;
+        case 3:
+            createStealthAddress();
+            break;
+        case 4:
+            getTransactionHistory();
+            break;
+        case 5:
+            saveTransactionHistory();
+            break;
+        case 6:
+            exit = 1;
+            break;
+        }
+    }
+}
+
+void Interface::checkBalance() {
+    if(transactionRepo.empty()) {
+        ui.message(walletBalanceText(wallet.walletBalanceCheck(privateKey)));
+        return;
+    }
+
+    ui.message(walletBalanceText(wallet.walletBalanceCheck(privateKey, transactionRepo)));
+}
+
+void Interface::createTransaction() {
+    // Transaction Type
+    bool transactionTypeSingle = true;
+    switch(ui.menu(transactionTypeOptionsText)) { case 2: transactionTypeSingle = false; break; }
+
+    // Number of Transactions - ensure it is less than a set number (10)
+    int numOfTransactions = stoi(ui.input(numOfTransactionsText));
+    while(numOfTransactions > 10)
+        numOfTransactions = stoi(ui.input(numOfTransactionsText));
+    
+    std::vector<std::string> receiverAddress;
+    std::vector<double> transactionAmount;
+    for(int i = 0; i < numOfTransactions; i++) {
+        // Receiver Address
+        std::string receiverAddress[i] = ui.input(oneTimeReceiverAddressText);     // In future revisions, ensure this input is a valid receiver key
+
+        // Transaction Amount
+        double transactionAmount[i] = stod(ui.input(transactionAmountText));       // In future revisions, ensure the wallet has this amount
+    }
+
+    // Onion Routing
+    bool useOnionRouting = false;
+    int numOfOnionNodes = 0;
+    ui.message(onionRoutingSelectionText);
+    switch(ui.yesOrNo(false)) { 
+    case 1: 
+        useOnionRouting = true;
+        numOfOnionNodes = stoi(ui.input(numOfOnionNodesText));
+        while(numOfOnionNodes < 4 && numOfOnionNodes > 6)
+            numOfOnionNodes = stoi(ui.input(numOfOnionNodesText));
+    break;
+    }
+
+    // Transaction Fee
+    std::pair<std::string, double> transactionFee = wallet.requestTransactionFee(transactionTypeSingle, numOfTransactions, receiverAddress[0], transactionAmount[0], useOnionRouting, numOfOnionNodes);
+    ui.message(transactionFeeInfoText(transactionFee.first, transactionFee.second));
+    if(ui.yesOrNo(false) == false)
+        return;
+
+    // Send Transaction
+    std::pair<bool, TransactionInfo> transaction = wallet.sendTransaction(transactionTypeSingle, numOfTransactions, receiverAddress, transactionAmount, useOnionRouting, numOfOnionNodes)
+    if(transaction.first == false) {    // If the transaction is invalid
+        ui.message(transactionFailureText("Error with Transaction"))
+        return;
+    }
+
+    // If the transaction is valid
+    ui.message(transactionSuccessTitleText);
+    ui.message(transactionSuccessText(transaction.second));
+}
+
+void Interface::createStealthAddress() {
+
+}
+
+void Interface::getTransactionHistory() {
+
+}
+
+void Interface::saveTransactionHistory() {
+
+}
+
+
+void Interface::run() {
+    ui.header(headerText);
+
+    login();
+    mainMenu();
 }

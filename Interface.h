@@ -48,12 +48,10 @@ private:
     std::string transactionAmountText = "Enter the Transaction Amount(vlnc):";
 
     std::string onionRoutingSelectionText = "Use Onion Routing + Bridging?:";
-    std::vector<std::string> onionRoutingOptionsText{"Yes", "No"};
 
     std::string numOfOnionNodesText = "Enter the # of Onion Nodes (4-6):";
 
-    std::vector<std::string> transactionFeeInfoText(std::string currentTime, double fee);
-    std::vector<std::string> transactionFeeOptionsText{"Yes", "No"};
+    std::vector<std::string> transactionFeeInfoText(std::string expiryTime, double fee);
 
     std::string transactionSuccessTitleText = "TRANSACTION SUCCESS";
     std::vector<std::string> transactionSuccessText(TransactionInfo info);
@@ -69,6 +67,16 @@ private:
     std::string savedHistoryText = "SAVED TRANSACTION HISTORY";     // Save Transaction History
 
     std::string loggedOutText = "LOGGED OUT SUCCESSFULLY";     // Logout
+
+    // UI Interface Functions
+    void login();
+    void mainMenu();
+
+    void checkBalance();
+    void createTransaction();
+    void createStealthAddress();
+    void getTransactionHistory();
+    void saveTransactionHistory();
 
 public:
     Interface() {};
