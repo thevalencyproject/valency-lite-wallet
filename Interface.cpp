@@ -22,8 +22,8 @@ void Interface::readTransactionRepository() {
 }
 
 unsigned int Interface::stealthKeyIndex(std::string privateKey) {
-    unsigned int output = stoul(aes.decrypt(reader.getData(stealthKeyIndexFilePath)));  // Get the current index
-    writer.createFile(std::to_string(output + 1), stealthKeyIndexFilePath);               // Add 1 to the index for next stealth key generation
+    unsigned int output = stoul(aes.decrypt(privateKey, reader.getData(stealthKeyIndexFilePath)));  // Get the current index
+    writer.createFile(std::to_string(output + 1), stealthKeyIndexFilePath);                         // Add 1 to the index for next stealth key generation
 
     return output;
 }
