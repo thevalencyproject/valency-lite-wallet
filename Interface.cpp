@@ -3,18 +3,21 @@
 
 // READER FUNCTIONS - DECRYPTS DATA FROM FILE
 void Interface::readTransactionRepository() {
-    transactionRepo = reader.getData(transactionRepoFilePath);
+    std::vector<std::string> data = reader.getData(transactionRepoFilePath);
 
     // Decrypt the data using the private key
-    for(int i = 0; i < transactionRepo.size(); i++) {
-        transactionRepo[i].time = aes.decrypt(privateKey, transactionRepo[i].time);
-        transactionRepo[i].date = aes.decrypt(privateKey, transactionRepo[i].date);
-        transactionRepo[i].sender = aes.decrypt(privateKey, transactionRepo[i].sender);
-        transactionRepo[i].receiver = aes.decrypt(privateKey, transactionRepo[i].receiver);
-        transactionRepo[i].amount = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].amount)));
-        transactionRepo[i].fee = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].fee)));
-        transactionRepo[i].nodes = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].nodes)));
-        transactionRepo[i].balance = stoul(aes.decrypt(privateKey, std::to_string(transactionRepo[i].balance)));
+    transactionRepo.resize(data.size() / 8);         // Resize the transaction repository to its proper size
+    for(int i = 0; i < data.size(); i = i + 8) {     // j counts up to transactionRepo.size()
+        int j = 0;
+        transactionRepo[j].time = aes.decrypt(privateKey, transactionRepo[i]);
+        transactionRepo[j].date = aes.decrypt(privateKey, transactionRepo[i + 1]);
+        transactionRepo[j].sender = aes.decrypt(privateKey, transactionRepo[i + 2]);
+        transactionRepo[j].receiver = aes.decrypt(privateKey, transactionRepo[i + 3]);
+        transactionRepo[j].amount = stoul(aes.decrypt(privateKey, transactionRepo[i + 4]));
+        transactionRepo[j].fee = stoul(aes.decrypt(privateKey, transactionRepo[i + 5]));
+        transactionRepo[j].nodes = stoul(aes.decrypt(privateKey, transactionRepo[i + 6]));
+        transactionRepo[j].balance = stoul(aes.decrypt(privateKey, transactionRepo[i + 7]));
+        j++;
     }
 }
 
@@ -208,18 +211,17 @@ void Interface::getTransactionHistory() {
 }
 
 void Interface::saveTransactionHistory() {
-    // Encrypt the data using the private key
-    std::vector<TransactionInfo> output;
-    output.resize(transactionRepo.size());
-    for(int i = 0; i < transactionRepo.size(); i++) {
-        output[i].time = aes.encrypt(privateKey, transactionRepo[i].time);
-        output[i].date = aes.encrypt(privateKey, transactionRepo[i].date);
-        output[i].sender = aes.encrypt(privateKey, transactionRepo[i].sender);
-        output[i].receiver = aes.encrypt(privateKey, transactionRepo[i].receiver);
-        output[i].amount = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].amount)));
-        output[i].fee = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].fee)));
-        output[i].nodes = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].nodes)));
-        output[i].balance = stoul(aes.encrypt(privateKey, std::to_string(transactionRepo[i].balance)));
+    std::vector<string> output;
+    output.resize(transactionRepo.size() * 8);
+    for(int i = 0; i < transactionRepo.size() * 8; i = i + 8) {
+        output[i] = aes.encrypt(privateKey, transactionRepo[i].time);
+        output[i + 1] = aes.encrypt(privateKey, transactionRepo[i].date);
+        output[i + 2] = aes.encrypt(privateKey, transactionRepo[i].sender);
+        output[i + 3] = aes.encrypt(privateKey, transactionRepo[i].receiver);
+        output[i + 4] = aes.encrypt(privateKey, std::to_string(transactionRepo[i].amount));
+        output[i + 5] = aes.encrypt(privateKey, std::to_string(transactionRepo[i].fee));
+        output[i + 6] = aes.encrypt(privateKey, std::to_string(transactionRepo[i].nodes));
+        output[i + 7] = aes.encrypt(privateKey, std::to_string(transactionRepo[i].balance));
     }
 
     writer.createFile(transactionRepo, transactionRepoFilePath);
