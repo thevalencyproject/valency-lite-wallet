@@ -234,10 +234,10 @@ void Interface::run() {
 
     login();
 
-    // Decrypt and read repo and stealth address index files
+    // Decrypt and read repo file + get correct filePath for stealth key index file
     stealthKeyIndexFilePath = "stealthkeyindex-" + publicKey + vlncFileType;
     transactionRepoFilePath = "transactionRepo-" + publicKey + vlncFileType;
-    reader.getData(transactionRepoFilePath);
+    readTransactionRepository();
 
     mainMenu();
 
