@@ -195,10 +195,18 @@ void Interface::createTransaction() {
 
     // Send Transaction
     std::pair<bool, TransactionInfo> transaction;   // Create a blank transaction pair
-    if(useOnionRouting == true) {
-        transaction = wallet.sendTransaction(transactionTypeSingle, receiverAddress, transactionAmount, numOfOnionNodes);
-    } else {
-        transaction = wallet.sendTransaction(transactionTypeSingle, receiverAddress, transactionAmount);
+    if(numOfTransactions == 1) {        // If it is a single transaction
+        if(useOnionRouting == true) {   // Uses default number of traceable ring signature decoys (10)
+            transaction = wallet.sendTransaction(wallet.getBalance(), privateKey, receiverAddress[0], transactionAmount[0], numOfOnionNodes, 10);
+        } else {
+            transaction = wallet.sendTransaction(wallet.getBalance(), privateKey, receiverAddress[0], transactionAmount[0], 10);
+        }
+    } else {                            // If it is a multi-transaction (multiple transactions on one block)
+        if(useOnionRouting == true) {   // Uses default number of traceable ring signature decoys (10)
+            transaction = wallet.sendTransaction(wallet.getBalance(), privateKey, receiverAddress, transactionAmount, numOfOnionNodes, 10);
+        } else {
+            transaction = wallet.sendTransaction(wallet.getBalance(), privateKey, receiverAddress, transactionAmount, 10);
+        }
     }
 
     if(transaction.first == false) {    // If the transaction is invalid
