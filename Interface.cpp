@@ -179,8 +179,11 @@ void Interface::createTransaction() {
     int numOfOnionNodes = 0;
     ui.message(onionRoutingSelectionText);
     switch(ui.yesOrNo(false)) { 
-    
-    i(ui.input(numOfOnionNodesText));
+    case 1:
+        useOnionRouting = true;
+        numOfOnionNodes = stoi(ui.input(numOfOnionNodesText));
+        while(numOfOnionNodes < 4 && numOfOnionNodes > 6)
+            numOfOnionNodes = stoi(ui.input(numOfOnionNodes));
     break;
     }
 
