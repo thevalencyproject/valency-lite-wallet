@@ -113,8 +113,10 @@ void Interface::login() {
             continue;
         }
 
-        ui.message(loginSuccessText(publicKey));
+        break;
     }
+
+    ui.message(loginSuccessText(publicKey));
 }
 // "Check Balance", "Create Transaction", "Create Stealth Address", "Transaction History", "Save Transaction History", "Logout"}
 void Interface::mainMenu() {
