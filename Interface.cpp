@@ -194,7 +194,13 @@ void Interface::createTransaction() {
         return;
 
     // Send Transaction
-    std::pair<bool, TransactionInfo> transaction = wallet.sendTransaction(transactionTypeSingle, numOfTransactions, receiverAddress, transactionAmount, useOnionRouting, numOfOnionNodes)
+    std::pair<bool, TransactionInfo> transaction;   // Create a blank transaction pair
+    if(useOnionRouting == true) {
+        transaction = wallet.sendTransaction(transactionTypeSingle, receiverAddress, transactionAmount, numOfOnionNodes);
+    } else {
+        transaction = wallet.sendTransaction(transactionTypeSingle, receiverAddress, transactionAmount);
+    }
+
     if(transaction.first == false) {    // If the transaction is invalid
         ui.message(transactionFailureText("Error with Transaction"))
         return;
