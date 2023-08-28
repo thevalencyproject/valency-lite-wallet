@@ -33,7 +33,7 @@ private:
     void readTransactionRepository();                        // Reads the transaction repository file from this wallet - encrypted in file using AES with private key
 
     // CUSTOM CONSOLE-UI TEXT
-    std::vector<std::string> headerText{"{THE VALENCY NETWORK}", "Lite-Wallet"};    // Header
+    std::vector<std::string> headerText{"THE VALENCY NETWORK", "Lite-Wallet", "Join us on Discord: https://discord.com/invite/xkGUnXuV9v"};    // Header
 
     std::vector<std::string> loginMenuText{"Login using User + Pass", "Login using Private Key", "Exit"};   // Login Menu
     std::string usernameLoginText = "Enter the Username";
